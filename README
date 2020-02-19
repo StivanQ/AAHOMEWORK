@@ -1,5 +1,5 @@
 // Patraș Anton-Fabian
-// 324CB
+
 // Ianuarie 2020
 
 Aceasta tema a inceput prin a cauta reducerea HAMCYCLE to SAT pe internet. Singura solutie gasita de mine nu putea fi implementata folosind restrictiile din enunt, si anume insemnatatea variabilelor. Asa ca am facut reverse engneering la solutie. Am descoperit 4 tipuri de clauze. 
