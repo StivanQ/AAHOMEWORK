@@ -1,0 +1,60 @@
+// Patraș Anton-Fabian
+// 324CB
+// Ianuarie 2020
+
+Aceasta tema a inceput prin a cauta reducerea HAMCYCLE to SAT pe internet. Singura solutie gasita de mine nu putea fi implementata folosind restrictiile din enunt, si anume insemnatatea variabilelor. Asa ca am facut reverse engneering la solutie. Am descoperit 4 tipuri de clauze. 
+
+Notam cu N numarul de noduri autunci se introduc N^2 variabile x definite in enunt si N(N/2 + 1) variabile a definite tot in enunt. 
+Notam cu M numarul de muchii, atunci M este maximum N(N - 1)/2 in cazul unui graf complet.
+
+Exemplu de graf:
+4
+1 2				1----2        					Ciclu : 1 3 4 2 1
+2 3				 \  /|		  Distanta de la referinta: 0 1 2 1 0
+2 4				  \/ |
+3 4				  /\ |
+1 3				 /  \|	
+-1				4----3
+
+
+Aceste 4 tipuri de clauze verifica corectitudine sau "cauta" un ciclu. In ordinea crescatoare a intuitivitatii cu care au fost gasite acestea sunt:
+
+1. Corectitudinea grafului definit in input:
+	Acest tip de clauze verifica corectitudinea grafului primit ca input, adica verifica ca doar muchiile grafului neorientat pot apartine ciclului ales.
+	Este introdusa cate o clauza pentru fiecare muchie a grafului definit. Aceasta clauze este o conjunctie din 2 disjunctii pentru muchia dus si muchia intors (graf neorientat).
+	Complexitate 4*M = O(M) = O(N^2)
+	Clauza de tip din exemplu:
+	((x1-2|~x2-1)&(~x1-2|x2-1))
+
+2. Fiecare nod trebuie sa apartina ciclului:
+	Acest tip de clauze impun restrictia ca fiecare nod sa apartina ciclului, aceasta este o una din conditiile ca ciclul ales sa fie hamiltonian.
+	Este introdusa cate o clauza pentru fiecare nod in afara de primul nod ales din ciclu. Fiecare clauza este o disjunctie de N/2 + 1 atomi.
+	Complexitate (N - 1)*(N/2 + 1) = O(N^2)
+	Clauza de tip din exemplu:
+	(a1-2|a2-2|a3-2)
+
+3. Exact doua muchii per nod sa apartina ciclului:
+	Acest tip de clauze inpun o restrictie necesara ca fiecare nod sa fie parcurs exact o singura data in ciclu (aceasta fiind cealalta conditie ca ciclul sa fie hamiltonian).
+	Este introdusa cate o clauza pentru fiecare nod din graf. Clauzele contin o disjunctie de P(P - 1)/2 conjunctii, unde P = gradul nodului respectiv. Pmax = N-1
+	Complexitate N*Pmax = O(N^2)
+	Clauza de tip din exemplu:
+	((x2-1&x2-3&~x2-4)|(x2-1&x2-4&~x2-3)|(x2-3&x2-4&~x2-1))
+
+	Mentiune: In constructia transformarii, daca un nod are gradul mai mic ca 2, gasirea unui ciclu hamiltonian este imposibila, deci formula echivalenta a problemei gasirii este ceva de tipul
+	x1-2&~x1-2
+	care este clar falsa pt orice combinatie de valori.
+
+4. Conditionarea distantei minima in ciclu de la nod la nodul unu:
+	Acest tip de clauza conditioneaza pozitionarea nodului in ciclu (ca distanta fata de 1) de existenta drumului de la nodul unu pana la nod si asigura unicitatea acestei plasari:
+	Sunt introduse (N/2 + 1) seturi de cate N clauze.
+	Complexitate (N/2 + 1)*N*2*Pmax = O(N^3)
+	Clauza de tip din exemplu:
+	~a1-1
+	((a3-3|~(((a2-2&x2-3)|(a2-4&x4-3))&~(a1-3|a2-3)))&(~a3-3|(((a2-2&x2-3)|(a2-4&x4-3))&~(a1-3|a2-3))))
+
+
+	Complexitatea totala = O(N^2) + O(N^2) + O(N^2) + O(N^3) = O(N^3) -> polinomiala.
+
+
+Feedback:
+	Tema e grea. Greutatea ei provine din restrictiile variabilelor care trebuie folosite, dar inteleg rolul restrictiilor. Ideea e ca sigur n-as fi venit eu cu reducerea asta niciodata(pe restrictiile astea). Am facut la curs o reducere sau doua, dar nu se compara nivelul de dificultate. Singurele reduceri de pe internet sunt din cursurile altor universitati. Este o reducere foarte usor de inteles si de implementat care nu are nevoie decat de un singur set de variabile xA-B, dar nu mai au aceeasi insemnatate cu cele din enunt, deci nu respecta restrictia, deci n-ar fi echivalente logic cu fisierele ref.
